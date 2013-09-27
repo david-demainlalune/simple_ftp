@@ -43,22 +43,19 @@ describe "SimpleFtp::TreeMaker" do
      	treeRoot = SimpleFtp::TreeMaker.new(@ftp, test_directory).root
      	treeRoot.children.size.should eq(2)
 
-     	treeRoot.children.map(&:name).should include('test.txt')
-     	treeRoot.children.map(&:name).should include('pipo')
+     	treeRoot.children.map(&:name).to_set.should eq(['pipo', 'test.txt'].to_set)
 
      	pipo_dir_index = treeRoot.children.index { |f| f.name == 'pipo'}
      	pipo_dir = treeRoot.children[pipo_dir_index]
 
      	pipo_dir.children.size.should eq(2)
-     	pipo_dir.children.map(&:name).should include('test2.txt')
-     	pipo_dir.children.map(&:name).should include('cerises')
+      pipo_dir.children.map(&:name).to_set.should eq(['cerises', 'test2.txt'].to_set)
 
      	cerises_dir_index = pipo_dir.children.index { |f| f.name == 'cerises'}
      	cerises_dir = pipo_dir.children[cerises_dir_index]
 
      	cerises_dir.children.size.should eq(2)
-     	cerises_dir.children.map(&:name).should include('test3.txt')
-     	cerises_dir.children.map(&:name).should include('framboises')
+      cerises_dir.children.map(&:name).to_set.should eq(['framboises', 'test3.txt'].to_set)
 
     end
   end
