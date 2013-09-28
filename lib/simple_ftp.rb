@@ -2,7 +2,7 @@
 require "delegate"
 require 'net/ftp'
 
-module Parser
+module StringParser
 
 		def parse_files(files_as_list_output)
 			# takes an array of strings
@@ -30,11 +30,13 @@ end
 module SimpleFtp
 	class File
 		attr_accessor :name, :type, :children, :full_path
-		def initialize(name=nil, type=nil, full_path=nil, children=nil)
+		attr_reader :deleted
+		def initialize(name=nil, type=nil, full_path=nil, children=[])
 			@name = name
 			@type = type
 			@full_path = full_path
 			@children = children
+			@deleted = false
 		end
 
 		def directory?
@@ -46,7 +48,24 @@ module SimpleFtp
 		end
 
 		def file?
-			! is_directory?
+			! directory?
+		end
+
+		def delete(ftp)
+			return if @deleted
+
+			if directory?
+				puts "deleted dir #{@full_path}"
+				ftp.rmdir(@full_path)
+			else
+				puts "deleted file #{@full_path}"
+				ftp.delete(@full_path)
+			end
+			@deleted = true
+		end
+
+		def no_children?
+			@children.empty? || @children.all? { |f| f.deleted }
 		end
 
 	end
@@ -57,7 +76,7 @@ module SimpleFtp
 
 	class TreeMaker
 
-		include Parser
+		include StringParser
 
 		attr_reader :root
 		
@@ -135,7 +154,7 @@ end
 module SimpleFtp
   class FTP < DelegateClass(Net::FTP)
 
-  	include Parser
+  	include StringParser
 
 		def initialize(host = nil, user = nil, passwd = nil, acct = nil)
 			@ftp = Net::FTP.new(host, user, passwd, acct)
@@ -151,20 +170,16 @@ module SimpleFtp
 		end
 
 		def rmdir!(path_str)
-			path = SimpleFtp::Path.new(path_str)
-			current_path = @ftp.pwd
+			tree_root = SimpleFtp::TreeMaker.new(@ftp, path_str).root
 
-			path, target_dir = path.split
-
-			@ftp.chdir(path)
-			puts "changed dir to #{@ftp.pwd}"
-			until directory_empty? target_dir
-				delete_all(target_dir)
-				@ftp.chdir(current_path)
+			if tree_root.children.empty?
+				@ftp.rmdir tree_root.full_path
+			else
+				stack = [tree_root]
+				iterative_delete(stack)
 			end
-			@ftp.rmdir(target_dir)
-			puts "changed dir to #{@ftp.pwd}"
 		end
+
 
 
 		# mimic class level func (Net::FTP#open)
@@ -183,31 +198,28 @@ module SimpleFtp
 
 		private
 
+		def iterative_delete(stack)
+			until stack.empty?
 
-		def directory_empty?(directory)
-			puts "calling directory_empty? on #{directory} with path #{@ftp.pwd}"
-			current = @ftp.pwd
-			@ftp.chdir(directory)
-			result = file_names.size == 0
-			@ftp.chdir(current)
-			result
-		end
+				next_dir = stack.last
 
-		def delete_all(target_directory)
-			if directory_empty? target_directory
-				@ftp.rmdir target_directory
-				puts "removed directory #{@ftp.pwd}/#{target_directory}"
-			else
-				@ftp.chdir target_directory
-				puts "changed dir to #{@ftp.pwd}"
-				files.each do |file|
-					if file.directory?
-						delete_all(file.name)
-					else
-						@ftp.delete(file.name)
-						puts "removed file #{@ftp.pwd}/#{file.name}"
-					end
+				deleted_this_round = []
+
+				if next_dir.no_children?
+					next_dir.delete(@ftp)
+					stack.pop
+					next_dir = stack.last
+					break if next_dir.nil?
 				end
+
+				puts next_dir.full_path
+
+				next_dir.children.select(&:file?).each { |f| deleted_this_round.push(f) }
+				next_dir.children.select { |f| f.directory? && f.no_children? }.each { |f| deleted_this_round.push(f) }
+
+				next_dir.children.select { |f| f.directory? && ! f.no_children? }.each { |f| stack.push(f) }
+
+				deleted_this_round.each { |f| f.delete(@ftp) }
 			end
 		end		
   end

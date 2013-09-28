@@ -29,26 +29,12 @@ describe "it add functionality to Net::FTP" do
   end
 
   
-  pending "rmdir!" do
-    pending "should remove non empty directories" do
+  describe "rmdir!" do
+    it "should remove non empty directories" do
       test_directory = generate_test_dir_name 
 
-      @ftp.mkdir(test_directory)
-      @ftp.chdir(test_directory)
-      @ftp.put('spec/test_data/test.txt')
+      generate_files_and_directories_on_server(@ftp, test_directory)
 
-      @ftp.mkdir("pipo")
-      @ftp.chdir("pipo")
-      @ftp.put('spec/test_data/test.txt')
-      
-      @ftp.mkdir("cerises")
-      @ftp.chdir("cerises")
-      @ftp.put('spec/test_data/test.txt')
-      @ftp.mkdir('framboises')
-
-      @ftp.chdir('..')
-      @ftp.chdir('..')
-      @ftp.chdir('..')
       @ftp.rmdir!(test_directory)
 
       @ftp.file_names.should_not include(test_directory)

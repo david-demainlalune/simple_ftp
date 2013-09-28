@@ -22,23 +22,8 @@ describe "SimpleFtp::TreeMaker" do
     it "should build a tree given a directory argument" do
       test_directory = generate_test_dir_name 
 
-      @ftp.mkdir(test_directory)
-      @ftp.chdir(test_directory)
-      @ftp.put('spec/test_data/test.txt')
+      generate_files_and_directories_on_server(@ftp, test_directory)
 
-      @ftp.mkdir("pipo")
-      @ftp.chdir("pipo")
-      @ftp.put('spec/test_data/test.txt', 'test2.txt')
-      
-      @ftp.mkdir("cerises")
-      @ftp.chdir("cerises")
-      @ftp.put('spec/test_data/test.txt', 'test3.txt')
-      @ftp.mkdir('framboises')
-
-      @ftp.chdir('..')
-      @ftp.chdir('..')
-      @ftp.chdir('..')
-	     
 
      	treeRoot = SimpleFtp::TreeMaker.new(@ftp, test_directory).root
      	treeRoot.children.size.should eq(2)
@@ -56,8 +41,21 @@ describe "SimpleFtp::TreeMaker" do
 
      	cerises_dir.children.size.should eq(2)
       cerises_dir.children.map(&:name).to_set.should eq(['framboises', 'test3.txt'].to_set)
-
     end
+
+    it "should accept absolute paths" do
+      test_directory = generate_test_dir_name 
+
+      generate_files_and_directories_on_server(@ftp, test_directory)
+
+      absolute_path_to_test_directory = "/#{FTP_ROOT_DIR}/#{FTP_TEST_DIR}/#{test_directory}"
+
+      treeRoot = SimpleFtp::TreeMaker.new(@ftp, absolute_path_to_test_directory).root
+      treeRoot.children.size.should eq(2)
+
+      treeRoot.children.map(&:name).to_set.should eq(['pipo', 'test.txt'].to_set)
+    end
+
   end
   
   after(:each) do
