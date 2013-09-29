@@ -1,6 +1,16 @@
 # SimpleFtp
 
-TODO: Write a gem description
+this gems wraps Net::FTP and wraps two utility methods:
+
+## rmdir!(directory_path)
+
+will remove a directory specified as argument and its content.
+
+## put_dir(local_directory, remote_directory = File.basename(local_directory))
+
+copies local_directory to remote_directory.  
+remote_directory is not a path but a basename, it will appear in the current remote pwd.
+
 
 ## Installation
 
