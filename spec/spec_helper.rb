@@ -9,6 +9,8 @@ require 'securerandom'
 
 require 'yaml'
 
+# config remote test_server
+
 begin
   puts Dir.pwd
   ftp_config = YAML.load_file(File.join('spec', 'test_ftp_config.yml'))
@@ -24,11 +26,19 @@ FTP_LOGIN = ftp_config["login"]
 FTP_PASSWORD =  ftp_config["password"]
 FTP_TEST_DIR = ftp_config["test_directory"]
 
+
+
 module Helpers
 
 	def generate_test_dir_name
 		"_test_#{SecureRandom.hex[0, 6]}"
 	end
+
+  def make_random_test_directory(ftp)
+    random_dir_name = generate_test_dir_name
+    ftp.mkdir(random_dir_name)
+    return random_dir_name
+  end
 
   def generate_files_and_directories_on_server(ftp, test_dir_name)
     ftp.mkdir(test_dir_name)

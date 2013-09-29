@@ -152,6 +152,15 @@ module SimpleFtp
 end
 
 module SimpleFtp
+	class NotADirectory < StandardError
+	end
+
+	class RemoteDirectoryNameInvalid < StandardError
+	end
+end
+
+module SimpleFtp
+
   class FTP < DelegateClass(Net::FTP)
 
   	include StringParser
@@ -180,6 +189,15 @@ module SimpleFtp
 			end
 		end
 
+		def putdir(local_directory, remote_directory=::File.basename(local_directory))
+ 			unless ::File.directory?(local_directory)
+				raise NotADirectory, "#{::File.absolute_path(local_directory)} is not a directory"
+			end
+
+			if file_names.include?(remote_directory)
+				raise RemoteDirectoryNameInvalid, "#{@ftp.pwd}/remote_directory} already exists on server"
+			end
+		end
 
 
 		# mimic class level func (Net::FTP#open)
@@ -216,7 +234,6 @@ module SimpleFtp
 
 				next_dir.children.select(&:file?).each { |f| deleted_this_round.push(f) }
 				next_dir.children.select { |f| f.directory? && f.no_children? }.each { |f| deleted_this_round.push(f) }
-
 				next_dir.children.select { |f| f.directory? && ! f.no_children? }.each { |f| stack.push(f) }
 
 				deleted_this_round.each { |f| f.delete(@ftp) }
