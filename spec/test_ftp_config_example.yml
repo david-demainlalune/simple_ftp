@@ -1,0 +1,6 @@
+---
+
+domain: 'ftp.example.com'
+login: 'login'
+password:  'my_secret'
+test_directory: 'directory to run tests in'

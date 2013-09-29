@@ -7,6 +7,23 @@ require 'net/ftp'
 require 'fileutils'
 require 'securerandom'
 
+require 'yaml'
+
+begin
+  puts Dir.pwd
+  ftp_config = YAML.load_file(File.join('spec', 'test_ftp_config.yml'))
+rescue Exception => e
+  puts "problem loading test_ftp_config.yml: #{e.message}"
+  puts "integration tests require access to live ftp server"
+  puts "access to this server is configured in spec/test_ftp_config.yml"
+  exit 1
+end
+
+DOMAIN = ftp_config["domain"]
+FTP_LOGIN = ftp_config["login"]
+FTP_PASSWORD =  ftp_config["password"]
+FTP_TEST_DIR = ftp_config["test_directory"]
+
 module Helpers
 
 	def generate_test_dir_name

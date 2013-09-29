@@ -1,20 +1,13 @@
 require 'spec_helper'
 
-DOMAIN = 'ftp.demainlalune.ch'
-FTP_LOGIN = 'ftp_test'
-FTP_PASSWORD =  'asd135'
-FTP_ROOT_DIR = 'data'
-FTP_TEST_DIR = 'test'
-
 include Helpers
-
 
 
 describe "SimpleFtp::TreeMaker" do
 
   before(:each) do
     @ftp = SimpleFtp::FTP.open(DOMAIN, FTP_LOGIN, FTP_PASSWORD)
-    @ftp.chdir("#{FTP_ROOT_DIR}/#{FTP_TEST_DIR}")
+    @ftp.chdir("#{FTP_TEST_DIR}")
   end
 
   
@@ -48,7 +41,7 @@ describe "SimpleFtp::TreeMaker" do
 
       generate_files_and_directories_on_server(@ftp, test_directory)
 
-      absolute_path_to_test_directory = "/#{FTP_ROOT_DIR}/#{FTP_TEST_DIR}/#{test_directory}"
+      absolute_path_to_test_directory = "#{FTP_TEST_DIR}/#{test_directory}"
 
       treeRoot = SimpleFtp::TreeMaker.new(@ftp, absolute_path_to_test_directory).root
       treeRoot.children.size.should eq(2)

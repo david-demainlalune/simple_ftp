@@ -1,10 +1,6 @@
 require 'spec_helper'
 
-DOMAIN = 'ftp.demainlalune.ch'
-FTP_LOGIN = 'ftp_test'
-FTP_PASSWORD =  'asd135'
-FTP_ROOT_DIR = 'data'
-FTP_TEST_DIR = 'test'
+
 
 include Helpers
 
@@ -12,7 +8,7 @@ describe "SimpleFtp::ftp base functionality" do
 
   it "works like NET::FTP" do
   	SimpleFtp::FTP.open(DOMAIN, FTP_LOGIN, FTP_PASSWORD) do |ftp|
-      ftp.chdir(FTP_ROOT_DIR)
+      ftp.chdir(FTP_TEST_DIR)
     	ftp.passive = true
     	ftp.put('spec/test_data/test.txt')
       ftp.file_names.should include('test.txt')
@@ -25,7 +21,7 @@ describe "it add functionality to Net::FTP" do
 
   before(:each) do
     @ftp = SimpleFtp::FTP.open(DOMAIN, FTP_LOGIN, FTP_PASSWORD)
-    @ftp.chdir("#{FTP_ROOT_DIR}/#{FTP_TEST_DIR}")
+    @ftp.chdir(FTP_TEST_DIR)
   end
 
   
