@@ -11,7 +11,7 @@ module StringParser
 				filename = f.split.last
 				type = is_directory?(f) ? :directory : :file
 				full_path = "#{@ftp.pwd}/#{filename}"
-				SimpleFtp::File.new(filename, type, full_path)
+				SimpleFtp::FtpFile.new(filename, type, full_path)
 			end
 		end
 
@@ -28,7 +28,7 @@ module StringParser
 end
 
 module SimpleFtp
-	class File
+	class FtpFile
 		attr_accessor :name, :type, :children, :full_path
 		attr_reader :deleted
 		def initialize(name=nil, type=nil, full_path=nil, children=[])
@@ -74,7 +74,7 @@ end
 
 module SimpleFtp
 
-	class TreeMaker
+	class FtpTreeMaker
 
 		include StringParser
 
@@ -91,7 +91,7 @@ module SimpleFtp
 		def build
 			path_to, target_dir = @path.split
 
-			@root = File.new(target_dir, :directory, "#{@current_path}/#{target_dir}")
+			@root = FtpFile.new(target_dir, :directory, "#{@current_path}/#{target_dir}")
 			build_node(@root)
 			@ftp.chdir(@current_path)
 		end
@@ -179,7 +179,7 @@ module SimpleFtp
 		end
 
 		def rmdir!(path_str)
-			tree_root = SimpleFtp::TreeMaker.new(@ftp, path_str).root
+			tree_root = SimpleFtp::FtpTreeMaker.new(@ftp, path_str).root
 
 			if tree_root.children.empty?
 				@ftp.rmdir tree_root.full_path
