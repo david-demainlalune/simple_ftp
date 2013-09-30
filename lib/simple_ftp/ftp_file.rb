@@ -1,7 +1,8 @@
 module SimpleFtp
 	class FtpFile
-		attr_accessor :name, :type, :children, :full_path
-		attr_reader :deleted
+		attr_accessor :children
+		attr_reader :name, :full_path, :deleted
+
 		def initialize(name=nil, type=nil, full_path=nil, children=[])
 			@name = name
 			@type = type
