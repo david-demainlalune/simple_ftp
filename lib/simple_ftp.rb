@@ -44,7 +44,7 @@ module SimpleFtp
 		end
 
 		def path
-			@path ||= SimpleFtp::Path.new(@full_path).split[0]
+			@path ||= SimpleFtp::FtpPath.new(@full_path).split[0]
 		end
 
 		def file?
@@ -82,7 +82,7 @@ module SimpleFtp
 		
 		def initialize(ftp, path_to_directory)
 			@ftp = ftp
-			@path = SimpleFtp::Path.new(path_to_directory)
+			@path = SimpleFtp::FtpPath.new(path_to_directory)
 			@current_path = @ftp.pwd
 			build
 		end
@@ -111,7 +111,7 @@ module SimpleFtp
 end
 
 module SimpleFtp
-	class Path
+	class FtpPath
 		def initialize(path)
 			@path = path
 		end
