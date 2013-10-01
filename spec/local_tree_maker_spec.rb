@@ -8,7 +8,7 @@ describe "SimpleFtp::LocalTreeMaker" do
   describe "its behavior" do
     it "should build a tree of local files given a directory argument" do
 
-      tree = SimpleFtp::LocalTreeMaker.new('spec\test_data\test_directory').root
+      tree = SimpleFtp::LocalTreeMaker.new('spec/test_data/test_directory').root
 
       tree.children.map(&:name).to_set.should eq(['test_a', 'test_aa', 'test_aaa', 'test_a.txt', 'test_aa.txt'].to_set)
 
@@ -26,7 +26,7 @@ describe "SimpleFtp::LocalTreeMaker" do
     end
 
     it "should hold reference to the path relative to the root" do
-      tree = SimpleFtp::LocalTreeMaker.new('spec\test_data\test_directory').root
+      tree = SimpleFtp::LocalTreeMaker.new('spec/test_data/test_directory').root
       test_a_index = tree.children.index { |f| f.name == 'test_a'}
       test_a_dir = tree.children[test_a_index]
       test_a_dir.remote_relative_path.should eq('test_directory/test_a')
@@ -37,7 +37,7 @@ describe "SimpleFtp::LocalTreeMaker" do
     end
 
     it "path_relative_to_root should point to a root == remote_directory if remote_directory given" do
-      tree = SimpleFtp::LocalTreeMaker.new('spec\test_data\test_directory', 'remote_directory_name').root
+      tree = SimpleFtp::LocalTreeMaker.new('spec/test_data/test_directory', 'remote_directory_name').root
       test_a_index = tree.children.index { |f| f.name == 'test_a'}
       test_a_dir = tree.children[test_a_index]
       test_a_dir.remote_relative_path.should eq('remote_directory_name/test_a')
