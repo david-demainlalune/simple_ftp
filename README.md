@@ -1,15 +1,35 @@
 # SimpleFtp
 
-this gems wraps Net::FTP and wraps two utility methods:
+this gems wraps Net::FTP and adds two utility methods:
 
 ## rmdir!(directory_path)
 
-will remove a directory specified as argument and its content.
+will remove a directory and its content with no warning.
 
 ## put_dir(local_directory, remote_directory = File.basename(local_directory))
 
 copies local_directory to remote_directory.  
-remote_directory is not a path but a basename, it will appear in the current remote pwd.
+remote_directory is not a path but a basename, it will appear in the current remote pwd.  
+File transfers will be made in whatever mode the session is set (text or binary see ).
+
+
+## dev Installation
+
+		git clone projet
+		bundle install
+		gem build simple_ftp.gemspec
+		gem install ./simple_ftp-x.x.x.gem
+
+## testing
+
+		bundle exec rspec spec
+
+needs a live real world ftp server for integration test. 
+server configuration done in. This file must be created (it is ignored by git).
+
+		spec/test_ftp_config.yml
+
+an example config is provided. Be smart and don't use a live production server.
 
 
 ## Installation
@@ -25,6 +45,12 @@ And then execute:
 Or install it yourself as:
 
     $ gem install simple_ftp
+
+
+## license 
+
+MIT, david hodgetts 2013  
+read, hack, improve
 
 ## Usage
 

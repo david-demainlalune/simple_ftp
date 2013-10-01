@@ -3,4 +3,4 @@
 domain: 'ftp.example.com'
 login: 'login'
 password:  'my_secret'
-test_directory: 'directory to run tests in'
+test_directory: 'directory to run tests in, must exist prior to test run. nothing will be modified outside of this directory'
