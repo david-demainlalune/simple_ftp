@@ -59,9 +59,21 @@ describe "it add functionality to Net::FTP" do
       test_directory = generate_test_dir_name
       @ftp.putdir('spec/test_data/test_directory', test_directory)
 
-      remote_tree = SimpleFtp::TreeMaker.new(@ftp, test_directory).root
+      remote_tree = SimpleFtp::FtpTreeMaker.new(@ftp, test_directory).root
 
-      remote_tree.children.size.should eq(5)
+      remote_tree.children.map(&:name).to_set.should eq(['test_a', 'test_aa', 'test_aaa', 'test_a.txt', 'test_aa.txt'].to_set)
+
+      test_a_index = remote_tree.children.index { |f| f.name == 'test_a'}
+      test_a_dir = remote_tree.children[test_a_index]
+      test_a_dir.children.map(&:name).to_set.should eq(['test_b', 'test_b.txt'].to_set)
+
+      test_aaa_index = remote_tree.children.index { |f| f.name == 'test_aaa'}
+      test_aaa_dir = remote_tree.children[test_aaa_index]
+      test_aaa_dir.children.map(&:name).to_set.should eq(['test_c', 'test_cc'].to_set)
+
+      test_cc_index = test_aaa_dir.children.index { |f| f.name == 'test_cc'}
+      test_cc_dir = test_aaa_dir.children[test_cc_index]
+      test_cc_dir.children.map(&:name).to_set.should eq(['test_d.txt'].to_set)
 
     end
 

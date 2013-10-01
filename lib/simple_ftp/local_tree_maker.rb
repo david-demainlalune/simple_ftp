@@ -3,13 +3,18 @@
 module SimpleFtp
 	class LocalTreeMaker
 		
+		# provides a mapping from local files to remote files
+		# creates a tree of SimpleFtp::LocalFile objects
+
 		attr_reader :root
 
-		def initialize(directory_path)
-			@directory_path = directory_path
+		def initialize(directory_path, remote_directory_name=nil)
+			#@directory_path = directory_path
+			root_name = remote_directory_name.nil? ? File.basename(directory_path) : remote_directory_name
+
 			@root = LocalFile.make_directory(File.basename(directory_path), 
 																			 File.absolute_path(directory_path), 
-																			 File.basename(directory_path))
+																			 root_name)
 			build @root
 		end
 

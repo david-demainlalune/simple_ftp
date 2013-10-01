@@ -41,7 +41,15 @@ module SimpleFtp
 			if file_names.include?(remote_directory)
 				raise RemoteDirectoryNameInvalid, "#{@ftp.pwd}/remote_directory} already exists on server"
 			end
+
+			local_tree = LocalTreeMaker.new(local_directory, remote_directory).root
+
+			stack = [local_tree]
+
+			iterative_putdir(stack, remote_directory)
 		end
+
+
 
 
 		# mimic class level func (Net::FTP#open)
@@ -82,6 +90,22 @@ module SimpleFtp
 
 				deleted_this_round.each { |f| f.delete(@ftp) }
 			end
-		end		
+		end
+
+		def iterative_putdir(stack, remote_head_directory)
+			ftp_head_dir = @ftp.pwd
+
+			until stack.empty?
+				current_node = stack.pop
+				new_dir_path = File.join(ftp_head_dir, current_node.relative_to_root_path)
+				@ftp.mkdir(new_dir_path)
+				@ftp.chdir(new_dir_path)
+				directories, files = current_node.children.partition { |n| n.directory? }
+				files.each { |f| @ftp.put(f.full_path) }
+				directories.each { |d| stack.push(d) }
+			end
+
+			@ftp.chdir(ftp_head_dir)
+		end	
   end
 end
