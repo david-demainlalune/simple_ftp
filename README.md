@@ -10,8 +10,27 @@ will remove a directory and its content with no warning.
 
 copies local_directory to remote_directory.  
 remote_directory is not a path but a basename, it will appear in the current remote pwd.  
-File transfers will be made in whatever mode the session is set (text or binary see ).
+File transfers will be made in whatever mode the session is set (text or binary see Net::FTP docs).
 
+## Example Usage
+
+I wrote this gem originally to help me deploy a jeckyll site via ftp.  
+This becomes quite easy with SimpleFtp
+
+		desc "deploy to ftp"
+		task :deploy_ftp do
+			SimpleFtp::FTP.open(DOMAIN, FTP_LOGIN, FTP_PASSWORD) do |ftp|
+				ftp.rmdir!(FTP_ROOT_DIR)
+				ftp.putdir('_site', FTP_ROOT_DIR)
+			end
+			puts "ftp deploy complete"
+		end
+
+## todo:
+
+refactor and cleanup
+
+write #getdir
 
 ## dev Installation
 
@@ -52,9 +71,7 @@ Or install it yourself as:
 MIT, david hodgetts 2013  
 read, hack, improve
 
-## Usage
 
-TODO: Write usage instructions here
 
 ## Contributing
 
