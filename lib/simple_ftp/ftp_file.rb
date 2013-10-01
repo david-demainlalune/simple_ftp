@@ -3,11 +3,11 @@ module SimpleFtp
 		attr_accessor :children
 		attr_reader :name, :full_path, :deleted
 
-		def initialize(name=nil, type=nil, full_path=nil, children=[])
+		def initialize(name=nil, type=nil, full_path=nil)
 			@name = name
 			@type = type
 			@full_path = full_path
-			@children = children
+			@children = []
 			@deleted = false
 		end
 
