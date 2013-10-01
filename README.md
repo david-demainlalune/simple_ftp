@@ -44,11 +44,16 @@ write #getdir
 		bundle exec rspec spec
 
 needs a live real world ftp server for integration test. 
-server configuration done in. This file must be created (it is ignored by git).
+server configuration done in file:
 
 		spec/test_ftp_config.yml
 
-an example config is provided. Be smart and don't use a live production server.
+This file must be created (it is ignored by git).  
+An example config is provided. 
+
+	spec/test_ftp_config_example.yml
+
+Be smart and don't use a live production server.
 
 
 ## Installation
