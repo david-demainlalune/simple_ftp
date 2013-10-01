@@ -2,11 +2,11 @@
 
 this gems wraps Net::FTP and adds two utility methods:
 
-## rmdir!(directory_path)
+### rmdir!(directory_path)
 
 will remove a directory and its content with no warning.
 
-## put_dir(local_directory, remote_directory = File.basename(local_directory))
+### put_dir(local_directory, remote_directory = File.basename(local_directory))
 
 copies local_directory to remote_directory.  
 remote_directory is not a path but a basename, it will appear in the current remote pwd.  
@@ -15,7 +15,7 @@ File transfers will be made in whatever mode the session is set (text or binary 
 
 ## dev Installation
 
-		git clone projet
+		git clone project
 		bundle install
 		gem build simple_ftp.gemspec
 		gem install ./simple_ftp-x.x.x.gem
