@@ -82,11 +82,12 @@ module SimpleFtp
 					break if next_dir.nil?
 				end
 
-				puts next_dir.full_path
+				directories, files = next_dir.children.partition(&:directory?)
+				empty_directories, non_empty_directories = directories.partition(&:no_children?)
 
-				next_dir.children.select(&:file?).each { |f| deleted_this_round.push(f) }
-				next_dir.children.select { |f| f.directory? && f.no_children? }.each { |f| deleted_this_round.push(f) }
-				next_dir.children.select { |f| f.directory? && ! f.no_children? }.each { |f| stack.push(f) }
+				files.each { |f| deleted_this_round.push(f) }
+				empty_directories.each { |f| deleted_this_round.push(f) }
+				non_empty_directories.each { |f| stack.push(f) }
 
 				deleted_this_round.each { |f| f.delete(@ftp) }
 			end
@@ -97,7 +98,7 @@ module SimpleFtp
 
 			until stack.empty?
 				current_node = stack.pop
-				new_dir_path = File.join(ftp_head_dir, current_node.relative_to_root_path)
+				new_dir_path = File.join(ftp_head_dir, current_node.remote_relative_path)
 				@ftp.mkdir(new_dir_path)
 				@ftp.chdir(new_dir_path)
 				directories, files = current_node.children.partition { |n| n.directory? }

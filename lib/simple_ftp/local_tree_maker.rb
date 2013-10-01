@@ -10,11 +10,11 @@ module SimpleFtp
 
 		def initialize(directory_path, remote_directory_name=nil)
 			#@directory_path = directory_path
-			root_name = remote_directory_name.nil? ? File.basename(directory_path) : remote_directory_name
+			remote_root_name = remote_directory_name.nil? ? File.basename(directory_path) : remote_directory_name
 
 			@root = LocalFile.make_directory(File.basename(directory_path), 
 																			 File.absolute_path(directory_path), 
-																			 root_name)
+																			 remote_root_name)
 			build @root
 		end
 
@@ -27,14 +27,14 @@ module SimpleFtp
 			files.each do |f| 
 				file_node = LocalFile.make_file(f, 
 																				File.join(node.full_path, f), 
-																				File.join(node.relative_to_root_path, f))
+																				File.join(node.remote_relative_path, f))
 				node.children.push file_node
 			end
 
 			directories.each do |d|
 				directory_node = LocalFile.make_directory(d, 
 																									File.join(node.full_path, d), 
-																									File.join(node.relative_to_root_path, d))
+																									File.join(node.remote_relative_path, d))
 				node.children.push directory_node
 				build(directory_node)
 			end
