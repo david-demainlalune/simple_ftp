@@ -99,10 +99,11 @@ module SimpleFtp
 			until stack.empty?
 				current_node = stack.pop
 				new_dir_path = File.join(ftp_head_dir, current_node.remote_relative_path)
+				puts "mkdir #{new_dir_path}"
 				@ftp.mkdir(new_dir_path)
 				@ftp.chdir(new_dir_path)
 				directories, files = current_node.children.partition { |n| n.directory? }
-				files.each { |f| @ftp.put(f.full_path) }
+				files.each { |f| puts "transfering #{f.full_path}"; @ftp.put(f.full_path) }
 				directories.each { |d| stack.push(d) }
 			end
 
